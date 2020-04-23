@@ -379,6 +379,12 @@ $(eval $(if $(NF_KMOD),$(call nf_add,NFT_FIB,CONFIG_NFT_FIB_INET, $(P_XT)nft_fib
 $(eval $(if $(NF_KMOD),$(call nf_add,NFT_FIB,CONFIG_NFT_FIB_IPV4, $(P_V4)nft_fib_ipv4),))
 $(eval $(if $(NF_KMOD),$(call nf_add,NFT_FIB,CONFIG_NFT_FIB_IPV6, $(P_V6)nft_fib_ipv6),))
 
+$(eval $(if $(NF_KMOD),$(call nf_add,NFT_TPROXY,CONFIG_NFT_SOCKET, $(P_XT)nft_socket, ge 4.18)))
+$(eval $(if $(NF_KMOD),$(call nf_add,NFT_TPROXY,CONFIG_NF_SOCKET_IPV4, $(P_V4)nf_socket_ipv4)))
+$(eval $(if $(NF_KMOD),$(call nf_add,NFT_TPROXY,CONFIG_NF_SOCKET_IPV6, $(P_V6)nf_socket_ipv6)))
+$(eval $(if $(NF_KMOD),$(call nf_add,NFT_TPROXY,CONFIG_NFT_TPROXY, $(P_XT)nft_tproxy, ge 4.18)))
+$(eval $(if $(NF_KMOD),$(call nf_add,NFT_TPROXY,CONFIG_NF_TPROXY_IPV4, $(P_V4)nf_tproxy_ipv4, ge 4.18)))
+$(eval $(if $(NF_KMOD),$(call nf_add,NFT_TPROXY,CONFIG_NF_TPROXY_IPV6, $(P_V6)nf_tproxy_ipv6, ge 4.18)))
 
 # userland only
 IPT_BUILTIN += $(NF_IPT-y) $(NF_IPT-m)
