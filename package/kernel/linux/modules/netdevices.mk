@@ -107,6 +107,22 @@ endef
 
 $(eval $(call KernelPackage,libphy))
 
+
+define KernelPackage/phylink
+  SUBMENU:=$(NETWORK_DEVICES_MENU)
+  TITLE:=Model for MAC to optional PHY connection
+  KCONFIG:=CONFIG_PHYLINK
+  FILES:=$(LINUX_DIR)/drivers/net/phy/phylink.ko
+  AUTOLOAD:=$(call AutoLoad,15,phylink,1)
+endef
+
+define KernelPackage/phylink/description
+ Model for MAC to optional PHY connection
+endef
+
+$(eval $(call KernelPackage,phylink))
+
+
 define KernelPackage/mii
   SUBMENU:=$(NETWORK_DEVICES_MENU)
   TITLE:=MII library
@@ -1141,3 +1157,23 @@ define KernelPackage/mlx5-core/description
 endef
 
 $(eval $(call KernelPackage,mlx5-core))
+
+
+define KernelPackage/sfp
+  SUBMENU:=$(NETWORK_DEVICES_MENU)
+  TITLE:=SFP cage support
+  DEPENDS:=+kmod-i2c-core +kmod-hwmon-core +kmod-phylink
+  KCONFIG:= \
+	CONFIG_SFP \
+	CONFIG_MDIO_I2C
+  FILES:= \
+	$(LINUX_DIR)/drivers/net/phy/sfp.ko \
+	$(LINUX_DIR)/drivers/net/phy/mdio-i2c.ko
+  AUTOLOAD:=$(call AutoProbe,mdio-i2c sfp)
+endef
+
+define KernelPackage/sfp/description
+ Kernel module to support SFP cages
+endef
+
+$(eval $(call KernelPackage,sfp))
