@@ -34,6 +34,13 @@ gnubee,gb-pc2)
 	ucidef_set_led_netdev "lan1" "lan1" "$boardname:green:lan1" "lan1"
 	ucidef_set_led_netdev "lan2" "lan2" "$boardname:green:lan2" "lan2"
 	;;
+linksys,ea7500-v2)
+	ucidef_set_led_netdev "lan1" "lan1 link" "$boardname:green:lan1" "lan1" "link"
+	ucidef_set_led_netdev "lan2" "lan2 link" "$boardname:green:lan2" "lan2" "link"
+	ucidef_set_led_netdev "lan3" "lan3 link" "$boardname:green:lan3" "lan3" "link"
+	ucidef_set_led_netdev "lan4" "lan4 link" "$boardname:green:lan4" "lan4" "link"
+	ucidef_set_led_netdev "wan" "wan link" "$boardname:green:wan" "wan" "link"
+	;;
 mikrotik,routerboard-m11g)
 	ucidef_set_rssimon "wlan0" "200000" "1"
 	ucidef_set_led_rssi "rssilow" "RSSILOW" "$boardname:green:rssi0" "wlan0" "1" "100"
@@ -49,6 +56,7 @@ netgear,r6220|\
 netgear,r6260|\
 netgear,r6350|\
 netgear,r6850|\
+netgear,wac124|\
 netgear,wndr3700-v5)
 	ucidef_set_led_netdev "wan" "wan" "$boardname:green:wan" "wan"
 	;;
@@ -67,8 +75,15 @@ tplink,re650-v1)
 	ucidef_set_led_netdev "eth_act" "LAN act" "$boardname:green:eth_act" "lan" "tx rx"
 	ucidef_set_led_netdev "eth_link" "LAN link" "$boardname:green:eth_link" "lan" "link"
 	;;
+tplink,re500-v1)
+	ucidef_set_led_netdev "eth_act" "LAN act" "$boardname:green:eth_act" "lan" "tx rx"
+	ucidef_set_led_netdev "eth_link" "LAN link" "$boardname:green:eth_link" "lan" "link"
+	;;
 xzwifi,creativebox-v1)
 	ucidef_set_led_netdev "internet" "internet" "$boardname:blue:internet" "wan"
+	;;
+xiaomi,redmi-router-ac2100)
+	ucidef_set_led_netdev "wan" "wan" "$boardname:white:wan" "wan"
 	;;
 youhua,wr1200js)
 	ucidef_set_led_netdev "internet" "INTERNET" "$boardname:green:wan" "wan"
