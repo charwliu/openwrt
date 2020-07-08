@@ -267,10 +267,10 @@ main (int argc, char * argv[])
 	hdr->reserved[1] = 1;		/* Major */
 	hdr->reserved[2] = 1;		/* Minor */
 	hdr->reserved[3] = 99;		/* Build */
-	hdr->reserved[4] = 30;
-	hdr->reserved[5] = 10;
-	hdr->reserved[6] = 2;
-	hdr->reserved[7] = 1;
+	hdr->reserved[4] = 99;
+	hdr->reserved[5] = 99;
+	hdr->reserved[6] = 99;
+	hdr->reserved[7] = 99;
 	message ("       Board Id: %s", board_id);
 	message ("         Region: %s", region == 1 ? "World Wide (WW)" 
 			: (region == 2 ? "North America (NA)" : "Unknown"));
