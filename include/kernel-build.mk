@@ -157,7 +157,7 @@ define BuildKernel
   compile: $(LINUX_DIR)/.modules
 	$(MAKE) -C image compile TARGET_BUILD=
 
-  oldconfig menuconfig nconfig: $(STAMP_PREPARED) $(STAMP_CHECKED) FORCE
+  oldconfig menuconfig nconfig xconfig: $(STAMP_PREPARED) $(STAMP_CHECKED) FORCE
 	rm -f $(LINUX_DIR)/.config.prev
 	rm -f $(STAMP_CONFIGURED)
 	$(LINUX_RECONF_CMD) > $(LINUX_DIR)/.config
@@ -169,9 +169,7 @@ define BuildKernel
 		) \
 		YACC=$(STAGING_DIR_HOST)/bin/bison \
 		$$@
-	$(LINUX_RECONF_DIFF) $(LINUX_DIR)/.config | \
-		grep -vE '(CONFIG_CC_(HAS_ASM_GOTO|IS_GCC|IS_CLANG)|GCC_VERSION)=' \
-		> $(LINUX_RECONFIG_TARGET)
+	$(call LINUX_RECONF_DIFF,$(LINUX_DIR)/.config) > $(LINUX_RECONFIG_TARGET)
 
   install: $(LINUX_DIR)/.image
 	+$(MAKE) -C image compile install TARGET_BUILD=

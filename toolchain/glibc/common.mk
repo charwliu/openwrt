@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2006-2016 OpenWrt.org
+# Copyright (C) 2006-2020 OpenWrt.org
 #
 # This is free software, licensed under the GNU General Public License v2.
 # See /LICENSE for more information.
@@ -7,12 +7,13 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=glibc
-PKG_VERSION:=2.31
+PKG_VERSION:=2.32
+PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
-PKG_SOURCE_VERSION:=3a44844c97a8ca1d0798c45b5252e6a49f9cf8e1
-PKG_MIRROR_HASH:=d7206510e494b3c723173d8ec0dd2e41314da59075871c5642324688001b3f6e
+PKG_SOURCE_VERSION:=5c36293f067d2af16e4eb9f9465be36f346ea6d0
+PKG_MIRROR_HASH:=f01b467843af97fe29dd67d0dc52e8f2effc968258ae806af37be085239a3e4c
 PKG_SOURCE_URL:=https://sourceware.org/git/glibc.git
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION)-$(PKG_SOURCE_VERSION).tar.xz
 

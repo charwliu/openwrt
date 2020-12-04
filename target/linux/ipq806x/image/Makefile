@@ -109,6 +109,36 @@ define Device/compex_wpq864
 endef
 TARGET_DEVICES += compex_wpq864
 
+define Device/edgecore_ecw5410
+	$(call Device/FitImage)
+	$(call Device/UbiFit)
+	DEVICE_VENDOR := Edgecore
+	DEVICE_MODEL := ECW5410
+	SOC := qcom-ipq8068
+	BLOCKSIZE := 128k
+	PAGESIZE := 2048
+	DEVICE_DTS_CONFIG := config@v2.0-ap160
+	DEVICE_PACKAGES := ath10k-firmware-qca9984-ct ipq-wifi-edgecore_ecw5410
+endef
+TARGET_DEVICES += edgecore_ecw5410
+
+define Device/linksys_ea7500-v1
+	$(call Device/LegacyImage)
+	DEVICE_VENDOR := Linksys
+	DEVICE_MODEL := EA7500
+	DEVICE_VARIANT := v1
+	SOC := qcom-ipq8064
+	PAGESIZE := 2048
+	BLOCKSIZE := 128k
+	KERNEL_SIZE := 3072k
+	KERNEL = kernel-bin | append-dtb | uImage none | append-uImage-fakehdr filesystem
+	UBINIZE_OPTS := -E 5
+	IMAGES := factory.bin sysupgrade.bin
+	IMAGE/factory.bin := append-kernel | pad-to $$$$(KERNEL_SIZE) | append-ubi | pad-to $$$$(PAGESIZE)
+	DEVICE_PACKAGES := ath10k-firmware-qca99x0-ct
+endef
+TARGET_DEVICES += linksys_ea7500-v1
+
 define Device/linksys_ea8500
 	$(call Device/LegacyImage)
 	DEVICE_VENDOR := Linksys

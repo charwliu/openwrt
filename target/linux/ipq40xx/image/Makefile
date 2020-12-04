@@ -245,6 +245,18 @@ define Device/avm_fritzrepeater-3000
 endef
 TARGET_DEVICES += avm_fritzrepeater-3000
 
+define Device/buffalo_wtr-m2133hp
+	$(call Device/FitImage)
+	$(call Device/UbiFit)
+	DEVICE_VENDOR := Buffalo
+	DEVICE_MODEL := WTR-M2133HP
+	SOC := qcom-ipq4019
+	DEVICE_PACKAGES := uboot-envtools ath10k-firmware-qca9984-ct ipq-wifi-buffalo_wtr-m2133hp
+	BLOCKSIZE := 128k
+	PAGESIZE := 2048
+endef
+TARGET_DEVICES += buffalo_wtr-m2133hp
+
 define Device/cellc_rtl30vw
 	KERNEL_SUFFIX := -fit-uImage.itb
 	KERNEL_INITRAMFS = kernel-bin | gzip | fit gzip $$(DTS_DIR)/$$(DEVICE_DTS).dtb
@@ -331,6 +343,32 @@ define Device/dlink_dap-2610
 	DEVICE_PACKAGES := ipq-wifi-dlink_dap2610
 endef
 TARGET_DEVICES += dlink_dap-2610
+
+define Device/edgecore_ecw5211
+	$(call Device/FitImage)
+	$(call Device/UbiFit)
+	DEVICE_VENDOR := Edgecore
+	DEVICE_MODEL := ECW5211
+	SOC := qcom-ipq4018
+	BLOCKSIZE := 128k
+	PAGESIZE := 2048
+	DEVICE_PACKAGES := kmod-tpm-i2c-atmel kmod-usb-acm uboot-envtools
+endef
+TARGET_DEVICES += edgecore_ecw5211
+
+define Device/edgecore_oap100
+	$(call Device/FitImage)
+	$(call Device/UbiFit)
+	DEVICE_VENDOR := Edgecore
+	DEVICE_MODEL := OAP100
+	SOC := qcom-ipq4019
+	BLOCKSIZE := 128k
+	PAGESIZE := 2048
+	IMAGES := nand-sysupgrade.bin
+	DEVICE_DTS_CONFIG := config@ap.dk07.1-c1
+	DEVICE_PACKAGES := ipq-wifi-edgecore_oap100 kmod-usb-acm kmod-usb-net kmod-usb-net-cdc-qmi uqmi
+endef
+TARGET_DEVICES += edgecore_oap100
 
 define Device/engenius_eap1300
 	$(call Device/FitImage)
@@ -437,6 +475,19 @@ define Device/glinet_gl-b1300
 endef
 TARGET_DEVICES += glinet_gl-b1300
 
+define Device/glinet_gl-s1300
+	$(call Device/FitImage)
+	DEVICE_VENDOR := GL.iNet
+	DEVICE_MODEL := GL-S1300
+	SOC := qcom-ipq4029
+	KERNEL_SIZE := 4096k
+	IMAGE_SIZE := 26624k
+	IMAGES := sysupgrade.bin
+	IMAGE/sysupgrade.bin := append-kernel | append-rootfs | pad-rootfs | append-metadata
+	DEVICE_PACKAGES := ipq-wifi-glinet_gl-s1300 kmod-fs-ext4 kmod-mmc kmod-spi-dev
+endef
+TARGET_DEVICES += glinet_gl-s1300
+
 define Device/linksys_ea6350v3
 	# The Linksys EA6350v3 has a uboot bootloader that does not
 	# support either booting lzma kernel images nor booting UBI
@@ -489,6 +540,34 @@ define Device/linksys_ea8300
 	DEVICE_PACKAGES := uboot-envtools ath10k-firmware-qca9888-ct ipq-wifi-linksys_ea8300 kmod-usb-ledtrig-usbport
 endef
 TARGET_DEVICES += linksys_ea8300
+
+define Device/linksys_mr8300
+	$(call Device/FitzImage)
+	DEVICE_VENDOR := Linksys
+	DEVICE_MODEL := MR8300
+	SOC := qcom-ipq4019
+	KERNEL_SIZE := 3072k
+	IMAGE_SIZE := 87040k
+	BLOCKSIZE := 128k
+	PAGESIZE := 2048
+	UBINIZE_OPTS := -E 5    # EOD marks to "hide" factory sig at EOF
+	IMAGES += factory.bin
+	IMAGE/factory.bin  := append-kernel | pad-to $$$$(KERNEL_SIZE) | append-ubi | linksys-image type=MR8300
+	DEVICE_PACKAGES := uboot-envtools ath10k-firmware-qca9888-ct ipq-wifi-linksys_mr8300-v0 kmod-usb-ledtrig-usbport
+endef
+TARGET_DEVICES += linksys_mr8300
+
+define Device/luma_wrtq-329acn
+	$(call Device/FitImage)
+	DEVICE_VENDOR := Luma Home
+	DEVICE_MODEL := WRTQ-329ACN
+	SOC := qcom-ipq4018
+	DEVICE_PACKAGES := ipq-wifi-luma_wrtq-329acn kmod-ath3k kmod-eeprom-at24 kmod-i2c-gpio uboot-envtools
+	IMAGE_SIZE := 76632k
+	BLOCKSIZE := 128k
+	PAGESIZE := 2048
+endef
+TARGET_DEVICES += luma_wrtq-329acn
 
 define Device/meraki_mr33
 	$(call Device/FitImage)
@@ -568,7 +647,6 @@ define Device/openmesh_a62
 	IMAGE/sysupgrade.bin/squashfs := append-rootfs | pad-rootfs | sysupgrade-tar rootfs=$$$$@ | append-metadata
 	DEVICE_PACKAGES := ath10k-firmware-qca9888-ct uboot-envtools
 endef
-
 TARGET_DEVICES += openmesh_a62
 
 define Device/qcom_ap-dk01.1-c1

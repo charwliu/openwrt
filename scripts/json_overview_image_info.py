@@ -2,7 +2,7 @@
 
 from os import getenv, environ
 from pathlib import Path
-from subprocess import run
+from subprocess import run, PIPE
 from sys import argv
 import json
 
@@ -38,14 +38,15 @@ if output:
             "make",
             "--no-print-directory",
             "-C",
-            f"target/linux/{output['target'].split('/')[0]}",
+            "target/linux/{}".format(output['target'].split('/')[0]),
             "val.DEFAULT_PACKAGES",
             "val.ARCH_PACKAGES",
         ],
-        capture_output=True,
+        stdout=PIPE,
+        stderr=PIPE,
         check=True,
         env=environ.copy().update({"TOPDIR": Path().cwd()}),
-        text=True,
+        universal_newlines=True,
     ).stdout.splitlines()
 
     output["default_packages"] = default_packages.split()
