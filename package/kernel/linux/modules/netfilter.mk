@@ -1168,7 +1168,6 @@ endef
 
 $(eval $(call KernelPackage,nft-fib))
 
-<<<<<<< HEAD
 define KernelPackage/nft-tproxy
   SUBMENU:=$(NF_MENU)
   TITLE:=Netfilter nf_tables tproxy support
@@ -1190,7 +1189,6 @@ define KernelPackage/nft-socket
 endef
 
 $(eval $(call KernelPackage,nft-socket))
-=======
 
 define KernelPackage/nft-queue
   SUBMENU:=$(NF_MENU)
@@ -1202,4 +1200,3 @@ define KernelPackage/nft-queue
 endef
 
 $(eval $(call KernelPackage,nft-queue))
->>>>>>> upstream/master
