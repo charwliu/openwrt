@@ -11,9 +11,9 @@ PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL=$(PROJECT_GIT)/project/iwinfo.git
-PKG_SOURCE_DATE:=2020-06-03
-PKG_SOURCE_VERSION:=2faa20e5e9d107b97e393a4eb458370e80b4d720
-PKG_MIRROR_HASH:=c5094a1751cbc610a91d21b7ddbec85c4f80d51dddb249fdcabb327ab1e2523f
+PKG_SOURCE_DATE:=2021-04-20
+PKG_SOURCE_VERSION:=cd23727f72b7859ba572c4e273247578c2124926
+PKG_MIRROR_HASH:=a43516e3502274e0ba64348481364158996ddb0019c35c9dcd2d5a257de67e98
 PKG_MAINTAINER:=Jo-Philipp Wich <jo@mein.io>
 PKG_LICENSE:=GPL-2.0
 
@@ -25,6 +25,8 @@ PKG_CONFIG_DEPENDS := \
 	CONFIG_PACKAGE_kmod-brcm-wl-mimo \
 	CONFIG_PACKAGE_kmod-cfg80211
 
+IWINFO_ABI_VERSION:=20210420
+
 include $(INCLUDE_DIR)/package.mk
 
 
@@ -33,7 +35,7 @@ define Package/libiwinfo
   CATEGORY:=Libraries
   TITLE:=Generalized Wireless Information Library (iwinfo)
   DEPENDS:=+PACKAGE_kmod-cfg80211:libnl-tiny +libuci +libubus
-  ABI_VERSION:=20200105
+  ABI_VERSION:=$(IWINFO_ABI_VERSION)
 endef
 
 define Package/libiwinfo/description
@@ -86,21 +88,22 @@ MAKE_FLAGS += \
 	FPIC="$(FPIC)" \
 	CFLAGS="$(TARGET_CFLAGS)" \
 	LDFLAGS="$(TARGET_LDFLAGS)" \
-	BACKENDS="$(IWINFO_BACKENDS)"
+	BACKENDS="$(IWINFO_BACKENDS)" \
+	SOVERSION="$(IWINFO_ABI_VERSION)"
 
 define Build/InstallDev
 	$(INSTALL_DIR) $(1)/usr/include/iwinfo
 	$(CP) $(PKG_BUILD_DIR)/include/iwinfo.h $(1)/usr/include/
 	$(CP) $(PKG_BUILD_DIR)/include/iwinfo/* $(1)/usr/include/iwinfo/
 	$(INSTALL_DIR) $(1)/usr/lib
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/libiwinfo.so $(1)/usr/lib/libiwinfo.so
+	$(CP) $(PKG_BUILD_DIR)/libiwinfo.so* $(1)/usr/lib/
 	$(INSTALL_DIR) $(1)/usr/lib/lua
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/iwinfo.so $(1)/usr/lib/lua/iwinfo.so
 endef
 
 define Package/libiwinfo/install
 	$(INSTALL_DIR) $(1)/usr/lib
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/libiwinfo.so $(1)/usr/lib/libiwinfo.so
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/libiwinfo.so.$(IWINFO_ABI_VERSION) $(1)/usr/lib/libiwinfo.so.$(IWINFO_ABI_VERSION)
 	$(INSTALL_DIR) $(1)/usr/share/libiwinfo
 	$(INSTALL_DATA) $(PKG_BUILD_DIR)/hardware.txt $(1)/usr/share/libiwinfo/hardware.txt
 endef

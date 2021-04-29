@@ -20,6 +20,11 @@
 		bootargs = "console=ttyS0,115200";
 	};
 
+	memory@0 {
+		device_type = "memory";
+		reg = <0x0 0x8000000>;
+	};
+
 	leds {
 		compatible = "gpio-leds";
 
@@ -72,7 +77,6 @@
 			partition@c0000 {
 				label = "u-boot-env2";
 				reg = <0x000c0000 0x40000>;
-				read-only;
 			};
 			partition@280000 {
 				label = "firmware";
