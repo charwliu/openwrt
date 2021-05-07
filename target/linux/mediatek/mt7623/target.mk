@@ -8,6 +8,7 @@ BOARDNAME:=MT7623
 CPU_TYPE:=cortex-a7
 CPU_SUBTYPE:=neon-vfpv4
 KERNELNAME:=Image dtbs zImage
+KERNEL_PATCHVER:=5.10
 FEATURES+=ext4 usb
 
 define Target/Description

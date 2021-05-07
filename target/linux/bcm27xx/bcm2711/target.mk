@@ -6,6 +6,7 @@ ARCH:=aarch64
 SUBTARGET:=bcm2711
 BOARDNAME:=BCM2711 boards (64 bit)
 CPU_TYPE:=cortex-a72
+KERNEL_PATCHVER:=5.10
 
 define Target/Description
 	Build firmware image for BCM2711 devices.
