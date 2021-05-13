@@ -1,0 +1,32 @@
+From 2270f5971bd0678f8f20d1c1b1f09f418783fb90 Mon Sep 17 00:00:00 2001
+From: Jonas Karlman <jonas@kwiboo.se>
+Date: Tue, 24 Jul 2018 15:50:06 +0200
+Subject: [PATCH 2/7] mmc: core: set initial signal voltage on power off
+
+Signed-off-by: jensen <jensenhuang@friendlyarm.com>
+---
+ drivers/mmc/core/core.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
+
+diff --git a/drivers/mmc/core/core.c b/drivers/mmc/core/core.c
+index 8ccae6452b9c..a6696130cb19 100644
+--- a/drivers/mmc/core/core.c
++++ b/drivers/mmc/core/core.c
+@@ -1349,6 +1349,14 @@ void mmc_power_off(struct mmc_host *host)
+ 	if (host->ios.power_mode == MMC_POWER_OFF)
+ 		return;
+ 
++	mmc_set_initial_signal_voltage(host);
++
++	/*
++	 * This delay should be sufficient to allow the power supply
++	 * to reach the minimum voltage.
++	 */
++	mmc_delay(10);
++
+ 	mmc_pwrseq_power_off(host);
+ 
+ 	host->ios.clock = 0;
+-- 
+2.31.1
+
