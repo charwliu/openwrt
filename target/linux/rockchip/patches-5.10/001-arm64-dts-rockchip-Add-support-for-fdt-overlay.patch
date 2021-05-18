@@ -1,0 +1,74 @@
+From 8d99354dd161e1439a598e738b215f774a8e4161 Mon Sep 17 00:00:00 2001
+From: hmz007 <hmz007@gmail.com>
+Date: Fri, 6 Nov 2020 11:48:04 +0800
+Subject: [PATCH 57/70] arm64: dts: rockchip: Add support for fdt overlay
+
+Change-Id: I0c40bb71ccf4adb4f7cde0f4bc9062f2c3771e7b
+Signed-off-by: hmz007 <hmz007@gmail.com>
+---
+ arch/arm64/boot/dts/rockchip/Makefile                 |  6 ++++++
+ .../boot/dts/rockchip/rk3328-nanopi-r2-common.dtsi    |  4 ++--
+ arch/arm64/boot/dts/rockchip/rk3328.dtsi              |  2 +-
+ arch/arm64/boot/dts/rockchip/rk3399-nanopi4.dtsi      |  3 ++-
+ arch/arm64/boot/dts/rockchip/rk3399.dtsi              | 11 +++++++++++
+ 5 files changed, 22 insertions(+), 4 deletions(-)
+
+diff --git a/arch/arm64/boot/dts/rockchip/rk3328.dtsi b/arch/arm64/boot/dts/rockchip/rk3328.dtsi
+index df22a653fd4d..23d53902d1b0 100644
+--- a/arch/arm64/boot/dts/rockchip/rk3328.dtsi
++++ b/arch/arm64/boot/dts/rockchip/rk3328.dtsi
+@@ -341,7 +341,7 @@ pd_vpu@RK3328_PD_VPU {
+ 			};
+ 		};
+ 
+-		reboot-mode {
++		reboot_mode: reboot-mode {
+ 			compatible = "syscon-reboot-mode";
+ 			offset = <0x5c8>;
+ 			mode-normal = <BOOT_NORMAL>;
+diff --git a/arch/arm64/boot/dts/rockchip/rk3399-nanopi4.dtsi b/arch/arm64/boot/dts/rockchip/rk3399-nanopi4.dtsi
+index 76a8b40a93c6..cb9589277e73 100644
+--- a/arch/arm64/boot/dts/rockchip/rk3399-nanopi4.dtsi
++++ b/arch/arm64/boot/dts/rockchip/rk3399-nanopi4.dtsi
+@@ -17,7 +17,8 @@
+ #include "rk3399-opp.dtsi"
+ 
+ / {
+-	chosen {
++	chosen: chosen {
++		bootargs = "swiotlb=1 coherent_pool=1m";
+ 		stdout-path = "serial2:1500000n8";
+ 	};
+ 
+diff --git a/arch/arm64/boot/dts/rockchip/rk3399.dtsi b/arch/arm64/boot/dts/rockchip/rk3399.dtsi
+index ada724b12f01..d8f16a26ef39 100644
+--- a/arch/arm64/boot/dts/rockchip/rk3399.dtsi
++++ b/arch/arm64/boot/dts/rockchip/rk3399.dtsi
+@@ -9,6 +9,7 @@
+ #include <dt-bindings/interrupt-controller/irq.h>
+ #include <dt-bindings/pinctrl/rockchip.h>
+ #include <dt-bindings/power/rk3399-power.h>
++#include <dt-bindings/soc/rockchip,boot-mode.h>
+ #include <dt-bindings/thermal/thermal.h>
+ 
+ / {
+@@ -1131,6 +1132,16 @@ pmu_io_domains: io-domains {
+ 			compatible = "rockchip,rk3399-pmu-io-voltage-domain";
+ 			status = "disabled";
+ 		};
++
++		reboot_mode: reboot-mode {
++			compatible = "syscon-reboot-mode";
++			offset = <0x300>;
++			mode-fastboot = <BOOT_FASTBOOT>;
++			mode-loader = <BOOT_BL_DOWNLOAD>;
++			mode-normal = <BOOT_NORMAL>;
++			mode-recovery = <BOOT_RECOVERY>;
++			status = "disabled";
++		};
+ 	};
+ 
+ 	spi3: spi@ff350000 {
+-- 
+2.31.1
+

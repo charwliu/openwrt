@@ -1,0 +1,25 @@
+From e76376ab19ef8585765b1f0c8b5852c085827eab Mon Sep 17 00:00:00 2001
+From: charwliu <charwliu@ngboss.com>
+Date: Tue, 18 May 2021 09:24:40 +0800
+Subject: [PATCH] scripts: fix use pkg-config to locate libcrypto
+
+---
+ scripts/Makefile | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/scripts/Makefile b/scripts/Makefile
+index c36106bce80e..ec9e515cf664 100644
+--- a/scripts/Makefile
++++ b/scripts/Makefile
+@@ -3,7 +3,7 @@
+ # scripts contains sources for various helper programs used throughout
+ # the kernel for the build process.
+ 
+-CRYPTO_LIBS = $(shell pkg-config --libs libcrypto 2> /dev/null || echo -lcrypto)
++CRYPTO_LIBS = $(shell pkg-config --static --libs libcrypto 2> /dev/null || echo -lcrypto)
+ CRYPTO_CFLAGS = $(shell pkg-config --cflags libcrypto 2> /dev/null)
+ 
+ hostprogs-always-$(CONFIG_BUILD_BIN2C)			+= bin2c
+-- 
+2.31.1
+
