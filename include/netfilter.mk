@@ -339,9 +339,6 @@ $(eval $(if $(NF_KMOD),$(call nf_add,NFT_NAT,CONFIG_NFT_REDIR_IPV4, $(P_V4)nft_r
 $(eval $(if $(NF_KMOD),$(call nf_add,NFT_NAT,CONFIG_NFT_MASQ, $(P_XT)nft_masq),))
 $(eval $(if $(NF_KMOD),$(call nf_add,NFT_NAT,CONFIG_NFT_MASQ_IPV4, $(P_V4)nft_masq_ipv4),))
 
-$(eval $(if $(NF_KMOD),$(call nf_add,NFT_NAT6,CONFIG_NFT_REDIR_IPV6, $(P_V6)nft_redir_ipv6),))
-$(eval $(if $(NF_KMOD),$(call nf_add,NFT_NAT6,CONFIG_NFT_MASQ_IPV6, $(P_V6)nft_masq_ipv6),))
-
 $(eval $(if $(NF_KMOD),$(call nf_add,NFT_FIB,CONFIG_NFT_FIB, $(P_XT)nft_fib),))
 $(eval $(if $(NF_KMOD),$(call nf_add,NFT_FIB,CONFIG_NFT_FIB_INET, $(P_XT)nft_fib_inet),))
 $(eval $(if $(NF_KMOD),$(call nf_add,NFT_FIB,CONFIG_NFT_FIB_IPV4, $(P_V4)nft_fib_ipv4),))
