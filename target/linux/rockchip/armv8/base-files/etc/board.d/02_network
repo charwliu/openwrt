@@ -8,9 +8,9 @@ rockchip_setup_interfaces()
 
 	case "$board" in
     friendlyelec,nanopi-r2s|\
-	friendlyelec,nanopi-r4s)
-		ucidef_set_interfaces_lan_wan 'eth1' 'eth0'
-		;;
+    friendlyelec,nanopi-r4s)
+        ucidef_set_interfaces_lan_wan 'eth1' 'eth0'
+        ;;
 	*)
 		ucidef_set_interface_lan 'eth0'
 		;;
@@ -36,9 +36,9 @@ rockchip_setup_macs()
 		wan_mac=$(nanopi_r2s_generate_mac)
 		lan_mac=$(macaddr_add "$wan_mac" +1)
 		;;
-	friendlyelec,nanopi-r4s)
+    friendlyelec,nanopi-r4s)
 		wan_mac=$(cat /sys/class/net/eth0/address)
-		lan_mac=$(cat /sys/class/net/eth1/address)
+		lan_mac=$(macaddr_add "$wan_mac" +1)
         ;;
 	esac
 
