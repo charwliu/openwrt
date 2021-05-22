@@ -1,0 +1,33 @@
+From beedf0699db1a818064dc03d1fdba95edec62f58 Mon Sep 17 00:00:00 2001
+From: William Wu <william.wu@rock-chips.com>
+Date: Mon, 8 Apr 2019 14:24:24 +0800
+Subject: [PATCH 49/73] usb: host: xhci-plat: add xhci slow suspend quirk
+
+If an xhci platform needs an extraordinary delay to wait for
+xHCI enter the Halted state after the Run/Stop (R/S) bit is
+cleared to '0', then add a property "xhci-slow-suspend" in
+its pdev (like dwc3 host.c) to enable XHCI_SLOW_SUSPEND quirk.
+
+Change-Id: If37fe7b7b37cc3c573361f4ef522404ebe39991e
+Signed-off-by: William Wu <william.wu@rock-chips.com>
+---
+ drivers/usb/host/xhci-plat.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/drivers/usb/host/xhci-plat.c b/drivers/usb/host/xhci-plat.c
+index d90cd5ec09cf..e909dd9bbe3b 100644
+--- a/drivers/usb/host/xhci-plat.c
++++ b/drivers/usb/host/xhci-plat.c
+@@ -289,6 +289,9 @@ static int xhci_plat_probe(struct platform_device *pdev)
+ 		if (device_property_read_bool(tmpdev, "quirk-broken-port-ped"))
+ 			xhci->quirks |= XHCI_BROKEN_PORT_PED;
+ 
++		if (device_property_read_bool(tmpdev, "xhci-slow-suspend"))
++			xhci->quirks |= XHCI_SLOW_SUSPEND;
++
+ 		device_property_read_u32(tmpdev, "imod-interval-ns",
+ 					 &xhci->imod_interval);
+ 	}
+-- 
+2.31.1
+

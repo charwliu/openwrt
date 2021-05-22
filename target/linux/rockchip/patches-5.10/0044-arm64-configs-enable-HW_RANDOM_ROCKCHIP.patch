@@ -1,0 +1,25 @@
+From b89afc35a9cfe30741eaa568f7dc3d2f48357a98 Mon Sep 17 00:00:00 2001
+From: hmz007 <hmz007@gmail.com>
+Date: Sat, 29 Aug 2020 18:07:41 +0800
+Subject: [PATCH 44/73] arm64: configs: enable HW_RANDOM_ROCKCHIP
+
+Signed-off-by: hmz007 <hmz007@gmail.com>
+---
+ arch/arm64/configs/nanopi-r2_linux_defconfig | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/arch/arm64/configs/nanopi-r2_linux_defconfig b/arch/arm64/configs/nanopi-r2_linux_defconfig
+index 81fee7c44dd4..e9563fff84c8 100644
+--- a/arch/arm64/configs/nanopi-r2_linux_defconfig
++++ b/arch/arm64/configs/nanopi-r2_linux_defconfig
+@@ -946,6 +946,7 @@ CONFIG_SERIAL_SC16IS7XX_SPI=y
+ CONFIG_SERIAL_DEV_BUS=m
+ CONFIG_TTY_PRINTK=y
+ CONFIG_HW_RANDOM=y
++CONFIG_HW_RANDOM_ROCKCHIP=y
+ CONFIG_RAW_DRIVER=m
+ CONFIG_TCG_TPM=m
+ CONFIG_TCG_TIS_SPI=m
+-- 
+2.31.1
+

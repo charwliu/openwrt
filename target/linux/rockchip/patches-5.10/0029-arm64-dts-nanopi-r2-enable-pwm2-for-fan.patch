@@ -1,0 +1,28 @@
+From 02028a323b4747362100008e7b561e5b9f9cf8f4 Mon Sep 17 00:00:00 2001
+From: hmz007 <hmz007@gmail.com>
+Date: Tue, 18 Feb 2020 15:28:36 +0800
+Subject: [PATCH 29/73] arm64: dts: nanopi-r2: enable pwm2 for fan
+
+Signed-off-by: hmz007 <hmz007@gmail.com>
+---
+ arch/arm64/boot/dts/rockchip/rk3328-nanopi-r2-rev00.dts | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/rockchip/rk3328-nanopi-r2-rev00.dts b/arch/arm64/boot/dts/rockchip/rk3328-nanopi-r2-rev00.dts
+index 971397659d5a..b9289b052edd 100644
+--- a/arch/arm64/boot/dts/rockchip/rk3328-nanopi-r2-rev00.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3328-nanopi-r2-rev00.dts
+@@ -62,6 +62,10 @@ &leds {
+ 	status = "okay";
+ };
+ 
++&pwm2 {
++	status = "okay";
++};
++
+ &rk805 {
+ 	interrupt-parent = <&gpio1>;
+ 	interrupts = <RK_PD0 IRQ_TYPE_LEVEL_LOW>;
+-- 
+2.31.1
+

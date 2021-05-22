@@ -1,0 +1,86 @@
+From 7a01b4e89d23a4d9272dbc066f637adc3e93e83d Mon Sep 17 00:00:00 2001
+From: Wu Liang feng <wulf@rock-chips.com>
+Date: Mon, 16 May 2016 18:59:40 +0800
+Subject: [PATCH 46/73] usb: dwc3: add a quirk xhci_slow_suspend_quirk
+
+On some xHCI controllers (e.g. Rockchip SoCs), which are
+integrated in DWC3 IP, need an extraordinary delay to wait
+for xHCI enter the Halted state(i.e. HCH in the USBSTS
+register is '1'), especially if DWC3 is in DRD mode.
+
+Change-Id: I67c84d4768df95f7616d6716a77cf743e4334122
+Signed-off-by: Wu Liang feng <wulf@rock-chips.com>
+---
+ Documentation/devicetree/bindings/usb/dwc3.txt | 3 +++
+ drivers/usb/dwc3/core.c                        | 2 ++
+ drivers/usb/dwc3/core.h                        | 4 ++++
+ drivers/usb/dwc3/host.c                        | 3 +++
+ 4 files changed, 12 insertions(+)
+
+diff --git a/Documentation/devicetree/bindings/usb/dwc3.txt b/Documentation/devicetree/bindings/usb/dwc3.txt
+index 66780a47ad85..91aeebd4c804 100644
+--- a/Documentation/devicetree/bindings/usb/dwc3.txt
++++ b/Documentation/devicetree/bindings/usb/dwc3.txt
+@@ -81,6 +81,9 @@ Optional properties:
+  - snps,dis-split-quirk: when set, change the way URBs are handled by the
+ 			 driver. Needed to avoid -EPROTO errors with usbhid
+ 			 on some devices (Hikey 970).
++ - snps,xhci-slow-suspend-quirk: when set, need an extraordinary delay to wait
++			for xHC enter the Halted state (i.e. HCH in the USBSTS
++			register is '1').
+  - snps,is-utmi-l1-suspend: true when DWC3 asserts output signal
+ 			utmi_l1_suspend_n, false when asserts utmi_sleep_n
+  - snps,hird-threshold: HIRD threshold
+diff --git a/drivers/usb/dwc3/core.c b/drivers/usb/dwc3/core.c
+index 97d6ae3c4df2..016898a14a53 100644
+--- a/drivers/usb/dwc3/core.c
++++ b/drivers/usb/dwc3/core.c
+@@ -1370,7 +1370,8 @@ static void dwc3_get_properties(struct d
+ 				"snps,dis-tx-ipgap-linecheck-quirk");
+ 	dwc->parkmode_disable_ss_quirk = device_property_read_bool(dev,
+ 				"snps,parkmode-disable-ss-quirk");
+-
++	dwc->xhci_slow_suspend_quirk = device_property_read_bool(dev,
++				"snps,xhci-slow-suspend-quirk");
+ 	dwc->tx_de_emphasis_quirk = device_property_read_bool(dev,
+ 				"snps,tx_de_emphasis_quirk");
+ 	device_property_read_u8(dev, "snps,tx_de_emphasis",
+diff --git a/drivers/usb/dwc3/core.h b/drivers/usb/dwc3/core.h
+index 1c8b349379af..335a868ea4e1 100644
+--- a/drivers/usb/dwc3/core.h
++++ b/drivers/usb/dwc3/core.h
+@@ -1054,6 +1054,9 @@ struct dwc3_scratchpad_array {
+  *			check during HS transmit.
+  * @parkmode_disable_ss_quirk: set if we need to disable all SuperSpeed
+  *			instances in park mode.
++ * @xhci_slow_suspend_quirk: set if need an extraordinary delay to wait
++ *         for xHC enter the Halted state after the Run/Stop
++ *         (R/S) bit is cleared to '0'.
+  * @tx_de_emphasis_quirk: set if we enable Tx de-emphasis quirk
+  * @tx_de_emphasis: Tx de-emphasis value
+  *	0	- -6dB de-emphasis
+@@ -1253,6 +1256,7 @@ struct dwc3 {
+ 	unsigned		dis_del_phy_power_chg_quirk:1;
+ 	unsigned		dis_tx_ipgap_linecheck_quirk:1;
+ 	unsigned		parkmode_disable_ss_quirk:1;
++ 	unsigned		xhci_slow_suspend_quirk:1;
+ 
+ 	unsigned		tx_de_emphasis_quirk:1;
+ 	unsigned		tx_de_emphasis:2;
+diff --git a/drivers/usb/dwc3/host.c b/drivers/usb/dwc3/host.c
+index 5cda769fbe1f..587a8122c40f 100644
+--- a/drivers/usb/dwc3/host.c
++++ b/drivers/usb/dwc3/host.c
+@@ -102,6 +102,9 @@ int dwc3_host_init(struct dwc3 *dwc)
+ 	if (dwc->usb2_lpm_disable)
+ 		props[prop_idx++].name = "usb2-lpm-disable";
+ 
++	if (dwc->xhci_slow_suspend_quirk)
++		props[prop_idx++].name = "xhci-slow-suspend";
++
+ 	/**
+ 	 * WORKAROUND: dwc3 revisions <=3.00a have a limitation
+ 	 * where Port Disable command doesn't work.
+-- 
+2.31.1
+

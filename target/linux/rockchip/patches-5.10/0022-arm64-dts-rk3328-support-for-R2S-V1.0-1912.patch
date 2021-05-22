@@ -1,0 +1,224 @@
+From 57c4b1df3159d8353e3aeb568b96b021a0264827 Mon Sep 17 00:00:00 2001
+From: hmz007 <hmz007@gmail.com>
+Date: Mon, 23 Dec 2019 15:08:49 +0800
+Subject: [PATCH 22/73] arm64: dts: rk3328: support for R2S (V1.0 1912)
+
+Signed-off-by: hmz007 <hmz007@gmail.com>
+---
+ arch/arm64/boot/dts/rockchip/Makefile         |   1 +
+ .../dts/rockchip/rk3328-nanopi-r2-common.dtsi |  37 +++++
+ .../dts/rockchip/rk3328-nanopi-r2-rev00.dts   | 128 ++++++++++++++++++
+ 3 files changed, 166 insertions(+)
+ create mode 100644 arch/arm64/boot/dts/rockchip/rk3328-nanopi-r2-rev00.dts
+
+diff --git a/arch/arm64/boot/dts/rockchip/Makefile b/arch/arm64/boot/dts/rockchip/Makefile
+index dc5604d90013..96f9edbc9215 100644
+--- a/arch/arm64/boot/dts/rockchip/Makefile
++++ b/arch/arm64/boot/dts/rockchip/Makefile
+@@ -7,6 +7,7 @@ dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3326-od
+ dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3328-a1.dtb
+ dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3328-evb.dtb
+ dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3328-nanopi-r2s.dtb
++dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3328-nanopi-r2-rev00.dtb
+ dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3328-nanopi-r2-rev20.dtb
+ dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3328-rock64.dtb
+ dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3328-roc-cc.dtb
+diff --git a/arch/arm64/boot/dts/rockchip/rk3328-nanopi-r2-common.dtsi b/arch/arm64/boot/dts/rockchip/rk3328-nanopi-r2-common.dtsi
+index 5087f92f0d58..bc92434631f3 100644
+--- a/arch/arm64/boot/dts/rockchip/rk3328-nanopi-r2-common.dtsi
++++ b/arch/arm64/boot/dts/rockchip/rk3328-nanopi-r2-common.dtsi
+@@ -38,6 +38,20 @@ mach: board {
+ 		model = "NanoPi R2 Series";
+ 	};
+ 
++	leds: gpio-leds {
++		compatible = "gpio-leds";
++		pinctrl-names = "default";
++		pinctrl-0 =<&leds_gpio>;
++		status = "disabled";
++
++		led@1 {
++			gpios = <&gpio0 RK_PA2 GPIO_ACTIVE_HIGH>;
++			label = "status_led";
++			linux,default-trigger = "heartbeat";
++			linux,default-trigger-delay-ms = <0>;
++		};
++	};
++
+ 	sdio_pwrseq: sdio-pwrseq {
+ 		compatible = "mmc-pwrseq-simple";
+ 		clocks = <&rk805 1>;
+@@ -77,6 +91,23 @@ vcc_sd: sdmmc-regulator {
+ 		vin-supply = <&vcc_io>;
+ 	};
+ 
++	vccio_sd: sdmmcio-regulator {
++		compatible = "regulator-gpio";
++		gpios = <&gpio1 RK_PD4 GPIO_ACTIVE_HIGH>;
++		states = <1800000 0x1
++			  3300000 0x0>;
++		regulator-name = "vccio_sd";
++		regulator-type = "voltage";
++		regulator-min-microvolt = <1800000>;
++		regulator-max-microvolt = <3300000>;
++		regulator-always-on;
++		vin-supply = <&vcc_io>;
++		startup-delay-us = <2000>;
++		regulator-settling-time-us = <5000>;
++		enable-active-high;
++		status = "disabled";
++	};
++
+ 	vcc_sys: vcc-sys {
+ 		compatible = "regulator-fixed";
+ 		regulator-name = "vcc_sys";
+@@ -467,6 +498,12 @@ otg_vbus_drv: otg-vbus-drv {
+ 			rockchip,pins = <3 RK_PA1 RK_FUNC_GPIO &pcfg_pull_none>;
+ 		};
+ 	};
++
++	gpio-leds {
++		leds_gpio: leds-gpio {
++			rockchip,pins = <0 RK_PA2 RK_FUNC_GPIO &pcfg_pull_none>;
++	   };
++	};
+ };
+ 
+ &sdmmc {
+diff --git a/arch/arm64/boot/dts/rockchip/rk3328-nanopi-r2-rev00.dts b/arch/arm64/boot/dts/rockchip/rk3328-nanopi-r2-rev00.dts
+new file mode 100644
+index 000000000000..c3313bdcea30
+--- /dev/null
++++ b/arch/arm64/boot/dts/rockchip/rk3328-nanopi-r2-rev00.dts
+@@ -0,0 +1,128 @@
++/*
++ * Copyright (c) 2019 FriendlyElec Computer Tech. Co., Ltd.
++ * (http://www.friendlyarm.com)
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License
++ * as published by the Free Software Foundation; either version 2
++ * of the License, or (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
++ */
++
++/dts-v1/;
++#include <dt-bindings/input/linux-event-codes.h>
++#include "rk3328-nanopi-r2-common.dtsi"
++
++/ {
++	model = "FriendlyElec NanoPi R2S";
++	compatible = "friendlyelec,nanopi-r2", "rockchip,rk3328";
++
++	gpio-keys {
++		compatible = "gpio-keys";
++		#address-cells = <1>;
++		#size-cells = <0>;
++		autorepeat;
++
++		pinctrl-names = "default";
++		pinctrl-0 = <&gpio_key1>;
++
++		button@0 {
++			gpios = <&gpio0 RK_PA0 GPIO_ACTIVE_LOW>;
++			label = "reset";
++			linux,code = <BTN_1>;
++			linux,input-type = <1>;
++			gpio-key,wakeup = <1>;
++			debounce-interval = <100>;
++		};
++	};
++
++	vcc_rtl8153: vcc-rtl8153-regulator {
++		compatible = "regulator-fixed";
++		gpio = <&gpio2 RK_PC6 GPIO_ACTIVE_HIGH>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&usb30_en_drv>;
++		regulator-always-on;
++		regulator-name = "vcc_rtl8153";
++		regulator-min-microvolt = <5000000>;
++		regulator-max-microvolt = <5000000>;
++		off-on-delay-us = <5000>;
++		enable-active-high;
++	};
++};
++
++&mach {
++	hwrev = <0>;
++	model = "NanoPi R2S";
++};
++
++&emmc {
++	status = "disabled";
++};
++
++&i2c0 {
++	status = "okay";
++};
++
++&leds {
++	status = "okay";
++};
++
++&rk805 {
++	interrupt-parent = <&gpio1>;
++	interrupts = <RK_PD0 IRQ_TYPE_LEVEL_LOW>;
++};
++
++&vccio_sd {
++	status = "okay";
++};
++
++&io_domains {
++	vccio3-supply = <&vccio_sd>;
++};
++
++&sdmmc {
++	vqmmc-supply = <&vccio_sd>;
++	max-frequency = <150000000>;
++	sd-uhs-sdr50;
++	sd-uhs-sdr104;
++	status = "okay";
++};
++
++&sdmmc_ext {
++	status = "disabled";
++};
++
++&sdio_pwrseq {
++	status = "disabled";
++};
++
++&pinctrl {
++	pmic {
++		pmic_int_l: pmic-int-l {
++			rockchip,pins = <1 RK_PD0 RK_FUNC_GPIO &pcfg_pull_up>;
++		};
++	};
++
++	rockchip-key {
++		gpio_key1: gpio-key1 {
++			rockchip,pins = <0 RK_PA0 RK_FUNC_GPIO &pcfg_pull_none>;
++		};
++	};
++
++	usb {
++		otg_vbus_drv: otg-vbus-drv {
++			rockchip,pins = <1 RK_PD2 RK_FUNC_GPIO &pcfg_pull_none>;
++		};
++
++		usb30_en_drv: usb30-en-drv {
++			rockchip,pins = <2 RK_PC6 RK_FUNC_GPIO &pcfg_pull_none>;
++		};
++	};
++};
+-- 
+2.31.1
+

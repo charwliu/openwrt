@@ -1,0 +1,83 @@
+From 8eabbbe2e19556db1cc9cae8da07fd601e44b3c9 Mon Sep 17 00:00:00 2001
+From: William Wu <william.wu@rock-chips.com>
+Date: Fri, 4 Jan 2019 11:30:20 +0800
+Subject: [PATCH 48/73] usb: dwc3: add a new xhci trb ent quirk for xHCI
+
+commit 8224b79008c1bcc349e2d565c24e11aa78672ea8 rockchip.
+
+On some xHCI controllers (e.g. Rockchip RK3399/RK3328/RK1808),
+which are integrated in DWC3 IP, need to enable the Evaluate
+Next TRB(ENT) flag in the TRB data structure to force xHC to
+pre-fetch the next TRB of a TD. It's useful for the stability
+of xHCI when transfer large data.
+
+Change-Id: I87b1d8b8b6912d77b988362f2f6dcd7766da8b0e
+Signed-off-by: William Wu <william.wu@rock-chips.com>
+---
+ drivers/usb/dwc3/core.c | 2 ++
+ drivers/usb/dwc3/core.h | 4 ++++
+ drivers/usb/dwc3/host.c | 5 ++++-
+ 3 files changed, 10 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/usb/dwc3/core.c b/drivers/usb/dwc3/core.c
+index 016898a14a53..11507d00f0a2 100644
+--- a/drivers/usb/dwc3/core.c
++++ b/drivers/usb/dwc3/core.c
+@@ -1372,6 +1372,9 @@ static void dwc3_get_properties(struct d
+ 				"snps,parkmode-disable-ss-quirk");
+ 	dwc->xhci_slow_suspend_quirk = device_property_read_bool(dev,
+ 				"snps,xhci-slow-suspend-quirk");
++	dwc->xhci_trb_ent_quirk = device_property_read_bool(dev,
++				"snps,xhci-trb-ent-quirk");
++
+ 	dwc->tx_de_emphasis_quirk = device_property_read_bool(dev,
+ 				"snps,tx_de_emphasis_quirk");
+ 	device_property_read_u8(dev, "snps,tx_de_emphasis",
+diff --git a/drivers/usb/dwc3/core.h b/drivers/usb/dwc3/core.h
+index 335a868ea4e1..3ee88d3d6b44 100644
+--- a/drivers/usb/dwc3/core.h
++++ b/drivers/usb/dwc3/core.h
+@@ -1057,6 +1057,9 @@ struct dwc3_scratchpad_array {
+  * @xhci_slow_suspend_quirk: set if need an extraordinary delay to wait
+  *         for xHC enter the Halted state after the Run/Stop
+  *         (R/S) bit is cleared to '0'.
++ * @xhci_trb_ent_quirk: set if need to enable the Evaluate Next TRB(ENT)
++ *         flag in the TRB data structure to force xHC to
++ *         pre-fetch the next TRB of a TD.
+  * @tx_de_emphasis_quirk: set if we enable Tx de-emphasis quirk
+  * @tx_de_emphasis: Tx de-emphasis value
+  *	0	- -6dB de-emphasis
+@@ -1257,6 +1260,7 @@ struct dwc3 {
+ 	unsigned		dis_tx_ipgap_linecheck_quirk:1;
+ 	unsigned		parkmode_disable_ss_quirk:1;
+  	unsigned		xhci_slow_suspend_quirk:1;
++ 	unsigned		xhci_trb_ent_quirk:1;
+ 
+ 	unsigned		tx_de_emphasis_quirk:1;
+ 	unsigned		tx_de_emphasis:2;
+diff --git a/drivers/usb/dwc3/host.c b/drivers/usb/dwc3/host.c
+index 587a8122c40f..b37d5157d906 100644
+--- a/drivers/usb/dwc3/host.c
++++ b/drivers/usb/dwc3/host.c
+@@ -43,7 +43,7 @@ static int dwc3_host_get_irq(struct dwc3 *dwc)
+ 
+ int dwc3_host_init(struct dwc3 *dwc)
+ {
+-	struct property_entry	props[4];
++	struct property_entry	props[5];
+ 	struct platform_device	*xhci;
+ 	int			ret, irq;
+ 	struct resource		*res;
+@@ -105,6 +105,9 @@ int dwc3_host_init(struct dwc3 *dwc)
+ 	if (dwc->xhci_slow_suspend_quirk)
+ 		props[prop_idx++].name = "xhci-slow-suspend";
+ 
++	if (dwc->xhci_trb_ent_quirk)
++		props[prop_idx++].name = "xhci-trb-ent-quirk";
++
+ 	/**
+ 	 * WORKAROUND: dwc3 revisions <=3.00a have a limitation
+ 	 * where Port Disable command doesn't work.
+-- 
+2.31.1
+

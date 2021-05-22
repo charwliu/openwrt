@@ -1,0 +1,802 @@
+From 13afd4adc23323eaea7a91dddf2a1185baf5161d Mon Sep 17 00:00:00 2001
+From: hmz007 <hmz007@gmail.com>
+Date: Mon, 19 Oct 2020 21:10:35 +0800
+Subject: [PATCH 56/73] arm64: dts: rockchip: Refine nanopi-r2 differences
+
+Signed-off-by: hmz007 <hmz007@gmail.com>
+---
+ .../dts/rockchip/rk3328-nanopi-r2-common.dtsi | 86 ++++++++++++++-----
+ .../dts/rockchip/rk3328-nanopi-r2-rev00.dts   | 79 +----------------
+ .../dts/rockchip/rk3328-nanopi-r2-rev02.dts   | 65 --------------
+ .../dts/rockchip/rk3328-nanopi-r2-rev03.dts   | 68 +--------------
+ .../dts/rockchip/rk3328-nanopi-r2-rev04.dts   | 65 --------------
+ .../dts/rockchip/rk3328-nanopi-r2-rev20.dts   | 52 ++++++++++-
+ .../dts/rockchip/rk3328-nanopi-r2-rev21.dts   | 74 +---------------
+ 7 files changed, 125 insertions(+), 364 deletions(-)
+
+diff --git a/arch/arm64/boot/dts/rockchip/rk3328-nanopi-r2-common.dtsi b/arch/arm64/boot/dts/rockchip/rk3328-nanopi-r2-common.dtsi
+index f4b5885e5c58..82d598ca840b 100644
+--- a/arch/arm64/boot/dts/rockchip/rk3328-nanopi-r2-common.dtsi
++++ b/arch/arm64/boot/dts/rockchip/rk3328-nanopi-r2-common.dtsi
+@@ -1,12 +1,13 @@
+ // SPDX-License-Identifier: (GPL-2.0+ OR MIT)
+ /*
+- * Copyright (c) 2018 FriendlyElec Computer Tech. Co., Ltd.
++ * Copyright (c) 2020 FriendlyElec Computer Tech. Co., Ltd.
+  * (http://www.friendlyarm.com)
+  *
+  * Copyright (c) 2017 Fuzhou Rockchip Electronics Co., Ltd
+  */
+ 
+ /dts-v1/;
++#include <dt-bindings/input/linux-event-codes.h>
+ #include "rk3328-dram-default-timing.dtsi"
+ #include "rk3328.dtsi"
+ 
+@@ -40,11 +41,30 @@ mach: board {
+ 		nvmem-cell-names = "id", "cpu-version";
+ 	};
+ 
++	gpio_keys: gpio-keys {
++		compatible = "gpio-keys";
++		#address-cells = <1>;
++		#size-cells = <0>;
++		autorepeat;
++
++		pinctrl-names = "default";
++		pinctrl-0 = <&gpio_key1>;
++
++		button@0 {
++			gpios = <&gpio0 RK_PA0 GPIO_ACTIVE_LOW>;
++			label = "K1";
++			linux,code = <BTN_1>;
++			linux,input-type = <1>;
++			gpio-key,wakeup = <1>;
++			debounce-interval = <100>;
++		};
++	};
++
+ 	leds: gpio-leds {
+ 		compatible = "gpio-leds";
+ 		pinctrl-names = "default";
+ 		pinctrl-0 =<&leds_gpio>;
+-		status = "disabled";
++		status = "okay";
+ 
+ 		led@1 {
+ 			gpios = <&gpio0 RK_PA2 GPIO_ACTIVE_HIGH>;
+@@ -60,6 +80,7 @@ sdio_pwrseq: sdio-pwrseq {
+ 		clock-names = "ext_clock";
+ 		pinctrl-names = "default";
+ 		pinctrl-0 = <&wifi_enable_h>;
++		status = "disabled";
+ 
+ 		/*
+ 		 * On the module itself this is one of these (depending
+@@ -232,7 +253,7 @@ &emmc {
+ 	pinctrl-0 = <&emmc_clk &emmc_cmd &emmc_bus8>;
+ 	vmmc-supply = <&vcc_io>;
+ 	vqmmc-supply = <&vcc18_emmc>;
+-	status = "okay";
++	status = "disabled";
+ };
+ 
+ &gmac2phy {
+@@ -279,17 +300,24 @@ rtl8211e: ethernet-phy@1 {
+ 	};
+ };
+ 
+-&i2c1 {
++&i2c0 {
++	clock-frequency = <200000>;
++	i2c-scl-rising-time-ns = <150>;
++	i2c-scl-falling-time-ns = <30>;
+ 	status = "okay";
++};
++
++&i2c1 {
++	clock-frequency = <400000>;
+ 	i2c-scl-rising-time-ns = <160>;
+ 	i2c-scl-falling-time-ns = <30>;
+-	clock-frequency = <400000>;
++	status = "okay";
+ 
+ 	rk805: pmic@18 {
+ 		compatible = "rockchip,rk805";
+ 		reg = <0x18>;
+-		interrupt-parent = <&gpio2>;
+-		interrupts = <6 IRQ_TYPE_LEVEL_LOW>;
++		interrupt-parent = <&gpio1>;
++		interrupts = <RK_PD0 IRQ_TYPE_LEVEL_LOW>;
+ 		#clock-cells = <1>;
+ 		clock-output-names = "xin32k", "rk805-clkout2";
+ 		gpio-controller;
+@@ -410,9 +438,27 @@ &rng {
+ };
+ 
+ &pinctrl {
++	gpio-leds {
++		leds_gpio: leds-gpio {
++			rockchip,pins = <0 RK_PA2 RK_FUNC_GPIO &pcfg_pull_none>;
++		};
++	};
++
++	rockchip-key {
++		gpio_key1: gpio-key1 {
++			rockchip,pins = <0 RK_PA0 RK_FUNC_GPIO &pcfg_pull_none>;
++		};
++	};
++
+ 	pmic {
+ 		pmic_int_l: pmic-int-l {
+-			rockchip,pins = <2 RK_PA6 RK_FUNC_GPIO &pcfg_pull_up>;
++			rockchip,pins = <1 RK_PD0 RK_FUNC_GPIO &pcfg_pull_up>;
++		};
++	};
++
++	pwm {
++		pwm2_sleep_pin: pwm2-sleep-pin {
++			rockchip,pins = <2 RK_PA6 RK_FUNC_GPIO &pcfg_output_low>;
+ 		};
+ 	};
+ 
+@@ -514,22 +560,22 @@ rgmiim1_pins: rgmiim1-pins {
+ 	};
+ 
+ 	usb {
+-		host_vbus_drv: host-vbus-drv {
+-			rockchip,pins = <0 RK_PA0 RK_FUNC_GPIO &pcfg_pull_none>;
+-		};
+-
+ 		otg_vbus_drv: otg-vbus-drv {
+-			rockchip,pins = <3 RK_PA1 RK_FUNC_GPIO &pcfg_pull_none>;
++			rockchip,pins = <1 RK_PD2 RK_FUNC_GPIO &pcfg_pull_none>;
+ 		};
+-	};
+ 
+-	gpio-leds {
+-		leds_gpio: leds-gpio {
+-			rockchip,pins = <0 RK_PA2 RK_FUNC_GPIO &pcfg_pull_none>;
++		usb30_en_drv: usb30-en-drv {
++			rockchip,pins = <2 RK_PC6 RK_FUNC_GPIO &pcfg_pull_none>;
+ 		};
+ 	};
+ };
+ 
++&pwm2 {
++	pinctrl-names = "default", "sleep";
++	pinctrl-1 = <&pwm2_sleep_pin>;
++	status = "okay";
++};
++
+ &sdmmc {
+ 	bus-width = <4>;
+ 	cap-mmc-highspeed;
+@@ -559,13 +605,13 @@ &sdmmc_ext {
+ 	sd-uhs-sdr104;
+ 	#address-cells = <1>;
+ 	#size-cells = <0>;
+-	status = "okay";
++	status = "disabled";
+ 
+ 	brcmf: bcrmf@1 {
+ 		reg = <1>;
+ 		compatible = "brcm,bcm4329-fmac";
+-		interrupt-parent = <&gpio1>;
+-		interrupts = <RK_PD2 IRQ_TYPE_LEVEL_HIGH>;
++		interrupt-parent = <&gpio3>;
++		interrupts = <RK_PA1 GPIO_ACTIVE_HIGH>;
+ 		interrupt-names = "host-wake";
+ 	};
+ };
+diff --git a/arch/arm64/boot/dts/rockchip/rk3328-nanopi-r2-rev00.dts b/arch/arm64/boot/dts/rockchip/rk3328-nanopi-r2-rev00.dts
+index c82343232f9e..164ecc5848c6 100644
+--- a/arch/arm64/boot/dts/rockchip/rk3328-nanopi-r2-rev00.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3328-nanopi-r2-rev00.dts
+@@ -1,36 +1,16 @@
+ // SPDX-License-Identifier: (GPL-2.0+ OR MIT)
+ /*
+- * Copyright (c) 2019 FriendlyElec Computer Tech. Co., Ltd.
++ * Copyright (c) 2020 FriendlyElec Computer Tech. Co., Ltd.
+  * (http://www.friendlyarm.com)
+  */
+ 
+ /dts-v1/;
+-#include <dt-bindings/input/linux-event-codes.h>
+ #include "rk3328-nanopi-r2-common.dtsi"
+ 
+ / {
+ 	model = "FriendlyElec NanoPi R2S";
+ 	compatible = "friendlyelec,nanopi-r2", "rockchip,rk3328";
+ 
+-	gpio-keys {
+-		compatible = "gpio-keys";
+-		#address-cells = <1>;
+-		#size-cells = <0>;
+-		autorepeat;
+-
+-		pinctrl-names = "default";
+-		pinctrl-0 = <&gpio_key1>;
+-
+-		button@0 {
+-			gpios = <&gpio0 RK_PA0 GPIO_ACTIVE_LOW>;
+-			label = "reset";
+-			linux,code = <BTN_1>;
+-			linux,input-type = <1>;
+-			gpio-key,wakeup = <1>;
+-			debounce-interval = <100>;
+-		};
+-	};
+-
+ 	vcc_rtl8153: vcc-rtl8153-regulator {
+ 		compatible = "regulator-fixed";
+ 		gpio = <&gpio2 RK_PC6 GPIO_ACTIVE_HIGH>;
+@@ -50,14 +30,6 @@ &mach {
+ 	model = "NanoPi R2S";
+ };
+ 
+-&emmc {
+-	status = "disabled";
+-};
+-
+-&i2c0 {
+-	status = "okay";
+-};
+-
+ &leds {
+ 	status = "okay";
+ 
+@@ -79,17 +51,6 @@ &leds_gpio {
+ 		<2 RK_PC2 RK_FUNC_GPIO &pcfg_pull_none>;
+ };
+ 
+-&pwm2 {
+-	pinctrl-names = "default", "sleep";
+-	pinctrl-1 = <&pwm2_sleep_pin>;
+-	status = "okay";
+-};
+-
+-&rk805 {
+-	interrupt-parent = <&gpio1>;
+-	interrupts = <RK_PD0 IRQ_TYPE_LEVEL_LOW>;
+-};
+-
+ &vccio_sd {
+ 	status = "okay";
+ };
+@@ -106,45 +67,7 @@ &sdmmc {
+ 	status = "okay";
+ };
+ 
+-&sdmmc_ext {
+-	status = "disabled";
+-};
+-
+-&sdio_pwrseq {
+-	status = "disabled";
+-};
+-
+ &uart1 {
+ 	status = "okay";
+ 	pinctrl-0 = <&uart1_xfer>;
+ };
+-
+-&pinctrl {
+-	pmic {
+-		pmic_int_l: pmic-int-l {
+-			rockchip,pins = <1 RK_PD0 RK_FUNC_GPIO &pcfg_pull_up>;
+-		};
+-	};
+-
+-	pwm {
+-		pwm2_sleep_pin: pwm2-sleep-pin {
+-			rockchip,pins = <2 RK_PA6 RK_FUNC_GPIO &pcfg_output_low>;
+-		};
+-	};
+-
+-	rockchip-key {
+-		gpio_key1: gpio-key1 {
+-			rockchip,pins = <0 RK_PA0 RK_FUNC_GPIO &pcfg_pull_none>;
+-		};
+-	};
+-
+-	usb {
+-		otg_vbus_drv: otg-vbus-drv {
+-			rockchip,pins = <1 RK_PD2 RK_FUNC_GPIO &pcfg_pull_none>;
+-		};
+-
+-		usb30_en_drv: usb30-en-drv {
+-			rockchip,pins = <2 RK_PC6 RK_FUNC_GPIO &pcfg_pull_none>;
+-		};
+-	};
+-};
+diff --git a/arch/arm64/boot/dts/rockchip/rk3328-nanopi-r2-rev02.dts b/arch/arm64/boot/dts/rockchip/rk3328-nanopi-r2-rev02.dts
+index bb41f1e0dc80..8528075cf07e 100644
+--- a/arch/arm64/boot/dts/rockchip/rk3328-nanopi-r2-rev02.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3328-nanopi-r2-rev02.dts
+@@ -5,31 +5,11 @@
+  */
+ 
+ /dts-v1/;
+-#include <dt-bindings/input/linux-event-codes.h>
+ #include "rk3328-nanopi-r2-common.dtsi"
+ 
+ / {
+ 	model = "FriendlyElec NanoPi NEO3";
+ 	compatible = "friendlyelec,nanopi-neo3", "rockchip,rk3328";
+-
+-	gpio-keys {
+-		compatible = "gpio-keys";
+-		#address-cells = <1>;
+-		#size-cells = <0>;
+-		autorepeat;
+-
+-		pinctrl-names = "default";
+-		pinctrl-0 = <&gpio_key1>;
+-
+-		button@0 {
+-			gpios = <&gpio0 RK_PA0 GPIO_ACTIVE_LOW>;
+-			label = "reset";
+-			linux,code = <BTN_1>;
+-			linux,input-type = <1>;
+-			gpio-key,wakeup = <1>;
+-			debounce-interval = <100>;
+-		};
+-	};
+ };
+ 
+ &mach {
+@@ -37,23 +17,6 @@ &mach {
+ 	model = "NanoPi NEO3";
+ };
+ 
+-&emmc {
+-	status = "disabled";
+-};
+-
+-&i2c0 {
+-	status = "okay";
+-};
+-
+-&leds {
+-	status = "okay";
+-};
+-
+-&rk805 {
+-	interrupt-parent = <&gpio1>;
+-	interrupts = <RK_PD0 IRQ_TYPE_LEVEL_LOW>;
+-};
+-
+ &vccio_sd {
+ 	status = "okay";
+ };
+@@ -70,35 +33,7 @@ &sdmmc {
+ 	status = "okay";
+ };
+ 
+-&sdmmc_ext {
+-	status = "disabled";
+-};
+-
+-&sdio_pwrseq {
+-	status = "disabled";
+-};
+-
+ &uart1 {
+ 	status = "okay";
+ 	pinctrl-0 = <&uart1_xfer>;
+ };
+-
+-&pinctrl {
+-	pmic {
+-		pmic_int_l: pmic-int-l {
+-			rockchip,pins = <1 RK_PD0 RK_FUNC_GPIO &pcfg_pull_up>;
+-		};
+-	};
+-
+-	rockchip-key {
+-		gpio_key1: gpio-key1 {
+-			rockchip,pins = <0 RK_PA0 RK_FUNC_GPIO &pcfg_pull_none>;
+-		};
+-	};
+-
+-	usb {
+-		otg_vbus_drv: otg-vbus-drv {
+-			rockchip,pins = <1 RK_PD2 RK_FUNC_GPIO &pcfg_pull_none>;
+-		};
+-	};
+-};
+diff --git a/arch/arm64/boot/dts/rockchip/rk3328-nanopi-r2-rev03.dts b/arch/arm64/boot/dts/rockchip/rk3328-nanopi-r2-rev03.dts
+index aa8c749a9c84..911cb470bffa 100644
+--- a/arch/arm64/boot/dts/rockchip/rk3328-nanopi-r2-rev03.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3328-nanopi-r2-rev03.dts
+@@ -5,31 +5,11 @@
+  */
+ 
+ /dts-v1/;
+-#include <dt-bindings/input/linux-event-codes.h>
+ #include "rk3328-nanopi-r2-common.dtsi"
+ 
+ / {
+ 	model = "FriendlyElec NanoPi NEO3S";
+ 	compatible = "friendlyelec,nanopi-neo3s", "rockchip,rk3328";
+-
+-	gpio-keys {
+-		compatible = "gpio-keys";
+-		#address-cells = <1>;
+-		#size-cells = <0>;
+-		autorepeat;
+-
+-		pinctrl-names = "default";
+-		pinctrl-0 = <&gpio_key1>;
+-
+-		button@0 {
+-			gpios = <&gpio0 RK_PA0 GPIO_ACTIVE_LOW>;
+-			label = "reset";
+-			linux,code = <BTN_1>;
+-			linux,input-type = <1>;
+-			gpio-key,wakeup = <1>;
+-			debounce-interval = <100>;
+-		};
+-	};
+ };
+ 
+ &mach {
+@@ -37,23 +17,6 @@ &mach {
+ 	model = "NanoPi NEO3S";
+ };
+ 
+-&emmc {
+-	status = "disabled";
+-};
+-
+-&i2c0 {
+-	status = "okay";
+-};
+-
+-&leds {
+-	status = "okay";
+-};
+-
+-&rk805 {
+-	interrupt-parent = <&gpio1>;
+-	interrupts = <RK_PD0 IRQ_TYPE_LEVEL_LOW>;
+-};
+-
+ &vccio_sd {
+ 	status = "okay";
+ };
+@@ -70,35 +33,10 @@ &sdmmc {
+ 	status = "okay";
+ };
+ 
+-&sdio_pwrseq {
++&sdmmc_ext {
+ 	status = "okay";
+ };
+ 
+-&brcmf {
+-	interrupt-parent = <&gpio3>;
+-	interrupts = <RK_PA1 IRQ_TYPE_LEVEL_HIGH>;
+-};
+-
+-&pinctrl {
+-	pmic {
+-		pmic_int_l: pmic-int-l {
+-			rockchip,pins = <1 RK_PD0 RK_FUNC_GPIO &pcfg_pull_up>;
+-		};
+-	};
+-
+-	rockchip-key {
+-		gpio_key1: gpio-key1 {
+-			rockchip,pins = <0 RK_PA0 RK_FUNC_GPIO &pcfg_pull_none>;
+-		};
+-	};
+-
+-	usb {
+-		otg_vbus_drv: otg-vbus-drv {
+-			rockchip,pins = <1 RK_PD2 RK_FUNC_GPIO &pcfg_pull_none>;
+-		};
+-
+-		usb30_en_drv: usb30-en-drv {
+-			rockchip,pins = <2 RK_PC6 RK_FUNC_GPIO &pcfg_pull_none>;
+-		};
+-	};
++&sdio_pwrseq {
++	status = "okay";
+ };
+diff --git a/arch/arm64/boot/dts/rockchip/rk3328-nanopi-r2-rev04.dts b/arch/arm64/boot/dts/rockchip/rk3328-nanopi-r2-rev04.dts
+index c52ce0178b31..cc5ced93280d 100644
+--- a/arch/arm64/boot/dts/rockchip/rk3328-nanopi-r2-rev04.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3328-nanopi-r2-rev04.dts
+@@ -5,31 +5,11 @@
+  */
+ 
+ /dts-v1/;
+-#include <dt-bindings/input/linux-event-codes.h>
+ #include "rk3328-nanopi-r2-common.dtsi"
+ 
+ / {
+ 	model = "FriendlyElec NanoPi NEO3 Black";
+ 	compatible = "friendlyelec,nanopi-neo3-black", "rockchip,rk3328";
+-
+-	gpio-keys {
+-		compatible = "gpio-keys";
+-		#address-cells = <1>;
+-		#size-cells = <0>;
+-		autorepeat;
+-
+-		pinctrl-names = "default";
+-		pinctrl-0 = <&gpio_key1>;
+-
+-		button@0 {
+-			gpios = <&gpio0 RK_PA0 GPIO_ACTIVE_LOW>;
+-			label = "reset";
+-			linux,code = <BTN_1>;
+-			linux,input-type = <1>;
+-			gpio-key,wakeup = <1>;
+-			debounce-interval = <100>;
+-		};
+-	};
+ };
+ 
+ &mach {
+@@ -46,23 +26,6 @@ opp-1056000000 {
+ 	};
+ };
+ 
+-&emmc {
+-	status = "disabled";
+-};
+-
+-&i2c0 {
+-	status = "okay";
+-};
+-
+-&leds {
+-	status = "okay";
+-};
+-
+-&rk805 {
+-	interrupt-parent = <&gpio1>;
+-	interrupts = <RK_PD0 IRQ_TYPE_LEVEL_LOW>;
+-};
+-
+ &vccio_sd {
+ 	status = "okay";
+ };
+@@ -78,31 +41,3 @@ &sdmmc {
+ 	sd-uhs-sdr104;
+ 	status = "okay";
+ };
+-
+-&sdmmc_ext {
+-	status = "disabled";
+-};
+-
+-&sdio_pwrseq {
+-	status = "disabled";
+-};
+-
+-&pinctrl {
+-	pmic {
+-		pmic_int_l: pmic-int-l {
+-			rockchip,pins = <1 RK_PD0 RK_FUNC_GPIO &pcfg_pull_up>;
+-		};
+-	};
+-
+-	rockchip-key {
+-		gpio_key1: gpio-key1 {
+-			rockchip,pins = <0 RK_PA0 RK_FUNC_GPIO &pcfg_pull_none>;
+-		};
+-	};
+-
+-	usb {
+-		otg_vbus_drv: otg-vbus-drv {
+-			rockchip,pins = <1 RK_PD2 RK_FUNC_GPIO &pcfg_pull_none>;
+-		};
+-	};
+-};
+diff --git a/arch/arm64/boot/dts/rockchip/rk3328-nanopi-r2-rev20.dts b/arch/arm64/boot/dts/rockchip/rk3328-nanopi-r2-rev20.dts
+index 5663ce078a9c..6859b9615d48 100644
+--- a/arch/arm64/boot/dts/rockchip/rk3328-nanopi-r2-rev20.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3328-nanopi-r2-rev20.dts
+@@ -1,6 +1,6 @@
+ // SPDX-License-Identifier: (GPL-2.0+ OR MIT)
+ /*
+- * Copyright (c) 2019 FriendlyElec Computer Tech. Co., Ltd.
++ * Copyright (c) 2020 FriendlyElec Computer Tech. Co., Ltd.
+  * (http://www.friendlyarm.com)
+  */
+ 
+@@ -17,16 +17,39 @@ &mach {
+ 	model = "NanoPi R2";
+ };
+ 
++&emmc {
++	status = "okay";
++};
++
+ &gmac2io {
+ 	pinctrl-0 = <&rgmiim1_pins>, <&phy_intb>, <&phy_rstb>;
+ };
+ 
++&gpio_keys {
++	status = "disabled";
++};
++
++&leds {
++	status = "disabled";
++};
++
++&rk805 {
++	interrupt-parent = <&gpio2>;
++	interrupts = <RK_PA6 IRQ_TYPE_LEVEL_LOW>;
++};
++
+ &rtl8211e {
+ 	interrupt-parent = <&gpio1>;
+ 	interrupts = <RK_PD0 IRQ_TYPE_LEVEL_LOW>;
+ };
+ 
+ &pinctrl {
++	pmic {
++		pmic_int_l: pmic-int-l {
++			rockchip,pins = <2 RK_PA6 RK_FUNC_GPIO &pcfg_pull_up>;
++		};
++	};
++
+ 	phy {
+ 		phy_intb: phy-intb {
+ 			rockchip,pins = <1 RK_PD0 RK_FUNC_GPIO &pcfg_pull_none>;
+@@ -36,4 +59,31 @@ phy_rstb: phy-rstb {
+ 			rockchip,pins = <1 RK_PC2 RK_FUNC_GPIO &pcfg_pull_none>;
+ 		};
+ 	};
++
++	usb {
++		host_vbus_drv: host-vbus-drv {
++			rockchip,pins = <0 RK_PA0 RK_FUNC_GPIO &pcfg_pull_none>;
++		};
++
++		otg_vbus_drv: otg-vbus-drv {
++			rockchip,pins = <3 RK_PA1 RK_FUNC_GPIO &pcfg_pull_none>;
++		};
++	};
++};
++
++&pwm2 {
++	status = "disabled";
++};
++
++&brcmf {
++	interrupt-parent = <&gpio1>;
++	interrupts = <RK_PD2 IRQ_TYPE_LEVEL_HIGH>;
++};
++
++&sdmmc_ext {
++	status = "okay";
++};
++
++&sdio_pwrseq {
++	status = "okay";
+ };
+diff --git a/arch/arm64/boot/dts/rockchip/rk3328-nanopi-r2-rev21.dts b/arch/arm64/boot/dts/rockchip/rk3328-nanopi-r2-rev21.dts
+index 9462a84cb19a..78f6d4cc976d 100644
+--- a/arch/arm64/boot/dts/rockchip/rk3328-nanopi-r2-rev21.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3328-nanopi-r2-rev21.dts
+@@ -1,36 +1,16 @@
+ // SPDX-License-Identifier: (GPL-2.0+ OR MIT)
+ /*
+- * Copyright (c) 2019 FriendlyElec Computer Tech. Co., Ltd.
++ * Copyright (c) 2020 FriendlyElec Computer Tech. Co., Ltd.
+  * (http://www.friendlyarm.com)
+  */
+ 
+ /dts-v1/;
+-#include <dt-bindings/input/linux-event-codes.h>
+ #include "rk3328-nanopi-r2-common.dtsi"
+ 
+ / {
+ 	model = "FriendlyElec NanoPi R2 Pro";
+ 	compatible = "friendlyelec,nanopi-r2", "rockchip,rk3328";
+ 
+-	gpio-keys {
+-		compatible = "gpio-keys";
+-		#address-cells = <1>;
+-		#size-cells = <0>;
+-		autorepeat;
+-
+-		pinctrl-names = "default";
+-		pinctrl-0 = <&gpio_key1>;
+-
+-		button@0 {
+-			gpios = <&gpio0 RK_PA0 GPIO_ACTIVE_LOW>;
+-			label = "reset";
+-			linux,code = <BTN_1>;
+-			linux,input-type = <1>;
+-			gpio-key,wakeup = <1>;
+-			debounce-interval = <100>;
+-		};
+-	};
+-
+ 	vcc_rtl8153: vcc-rtl8153-regulator {
+ 		compatible = "regulator-fixed";
+ 		gpio = <&gpio2 RK_PC6 GPIO_ACTIVE_HIGH>;
+@@ -54,10 +34,6 @@ &emmc {
+ 	status = "okay";
+ };
+ 
+-&i2c0 {
+-	status = "okay";
+-};
+-
+ &leds {
+ 	status = "okay";
+ 
+@@ -79,17 +55,6 @@ &leds_gpio {
+ 		<2 RK_PC2 RK_FUNC_GPIO &pcfg_pull_none>;
+ };
+ 
+-&pwm2 {
+-	pinctrl-names = "default", "sleep";
+-	pinctrl-1 = <&pwm2_sleep_pin>;
+-	status = "okay";
+-};
+-
+-&rk805 {
+-	interrupt-parent = <&gpio1>;
+-	interrupts = <RK_PD0 IRQ_TYPE_LEVEL_LOW>;
+-};
+-
+ &vccio_sd {
+ 	status = "okay";
+ };
+@@ -106,41 +71,10 @@ &sdmmc {
+ 	status = "okay";
+ };
+ 
+-&sdio_pwrseq {
++&sdmmc_ext {
+ 	status = "okay";
+ };
+ 
+-&brcmf {
+-	interrupt-parent = <&gpio3>;
+-	interrupts = <RK_PA1 IRQ_TYPE_LEVEL_HIGH>;
+-};
+-
+-&pinctrl {
+-	pmic {
+-		pmic_int_l: pmic-int-l {
+-			rockchip,pins = <1 RK_PD0 RK_FUNC_GPIO &pcfg_pull_up>;
+-		};
+-	};
+-
+-	pwm {
+-		pwm2_sleep_pin: pwm2-sleep-pin {
+-			rockchip,pins = <2 RK_PA6 RK_FUNC_GPIO &pcfg_output_low>;
+-		};
+-	};
+-
+-	rockchip-key {
+-		gpio_key1: gpio-key1 {
+-			rockchip,pins = <0 RK_PA0 RK_FUNC_GPIO &pcfg_pull_none>;
+-		};
+-	};
+-
+-	usb {
+-		otg_vbus_drv: otg-vbus-drv {
+-			rockchip,pins = <1 RK_PD2 RK_FUNC_GPIO &pcfg_pull_none>;
+-		};
+-
+-		usb30_en_drv: usb30-en-drv {
+-			rockchip,pins = <2 RK_PC6 RK_FUNC_GPIO &pcfg_pull_none>;
+-		};
+-	};
++&sdio_pwrseq {
++	status = "okay";
+ };
+-- 
+2.31.1
+

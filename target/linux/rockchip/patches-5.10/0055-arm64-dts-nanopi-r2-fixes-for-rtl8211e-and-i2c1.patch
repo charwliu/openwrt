@@ -1,0 +1,38 @@
+From b9bc06e4cedc75e6e4178b5e58adfa14815ad5d0 Mon Sep 17 00:00:00 2001
+From: hmz007 <hmz007@gmail.com>
+Date: Mon, 19 Oct 2020 14:46:23 +0800
+Subject: [PATCH 55/73] arm64: dts: nanopi-r2: fixes for rtl8211e and i2c1
+
+Signed-off-by: hmz007 <hmz007@gmail.com>
+---
+ arch/arm64/boot/dts/rockchip/rk3328-nanopi-r2-common.dtsi | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
+
+diff --git a/arch/arm64/boot/dts/rockchip/rk3328-nanopi-r2-common.dtsi b/arch/arm64/boot/dts/rockchip/rk3328-nanopi-r2-common.dtsi
+index 9861695c52c4..f4b5885e5c58 100644
+--- a/arch/arm64/boot/dts/rockchip/rk3328-nanopi-r2-common.dtsi
++++ b/arch/arm64/boot/dts/rockchip/rk3328-nanopi-r2-common.dtsi
+@@ -270,8 +270,8 @@ mdio {
+ 		#address-cells = <1>;
+ 		#size-cells = <0>;
+ 
+-		rtl8211e: phy@0 {
+-			reg = <0>;
++		rtl8211e: ethernet-phy@1 {
++			reg = <1>;
+ 			reset-assert-us = <10000>;
+ 			reset-deassert-us = <30000>;
+ 			/* reset-gpios = <&gpio1 RK_PC2 GPIO_ACTIVE_LOW>; */
+@@ -281,6 +281,9 @@ rtl8211e: phy@0 {
+ 
+ &i2c1 {
+ 	status = "okay";
++	i2c-scl-rising-time-ns = <160>;
++	i2c-scl-falling-time-ns = <30>;
++	clock-frequency = <400000>;
+ 
+ 	rk805: pmic@18 {
+ 		compatible = "rockchip,rk805";
+-- 
+2.31.1
+
