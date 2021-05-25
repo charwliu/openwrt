@@ -48,10 +48,10 @@ define Build/mt7622-gpt
 				-N recovery	-r	-p 32M@6M \
 		$(if $(findstring sdmmc,$1), \
 				-N install	-r	-p 7M@38M \
-			-t 0x2e -N production		-p 211M@45M \
+			-t 0x2e -N production		-p 980M@45M \
 		) \
 		$(if $(findstring emmc,$1), \
-			-t 0x2e -N production		-p 980M@40M \
+			-t 0x2e -N production		-p 7168M@40M \
 		)
 	cat $@.tmp >> $@
 	rm $@.tmp
@@ -76,7 +76,7 @@ define Device/bananapi_bpi-r64
   DEVICE_DTS := mt7622-bananapi-bpi-r64
   DEVICE_DTS_OVERLAY := mt7622-bananapi-bpi-r64-pcie1 mt7622-bananapi-bpi-r64-sata
   DEVICE_PACKAGES := kmod-ata-ahci-mtk kmod-btmtkuart kmod-usb3 e2fsprogs mkf2fs f2fsck
-  ARTIFACTS := emmc-preloader.bin emmc-bl31-uboot.fip sdcard.img.gz snand-preloader.bin snand-bl31-uboot.fip
+  ARTIFACTS := emmc-preloader.bin emmc-bl31-uboot.fip sdcard.img.gz snand-preloader.bin snand-bl31-uboot.fip emmc.img.gz
   IMAGES := sysupgrade.itb
   KERNEL_INITRAMFS_SUFFIX := -recovery.itb
   ARTIFACT/emmc-preloader.bin	:= bl2 emmc-2ddr
@@ -93,6 +93,13 @@ define Device/bananapi_bpi-r64
 				   pad-to 43008k | bl2 snand-2ddr |\
 				   pad-to 43520k | bl31-uboot bananapi_bpi-r64-snand |\
 				   pad-to 46080k | append-image squashfs-sysupgrade.itb | gzip
+  ARTIFACT/emmc.img.gz	:= mt7622-gpt emmc |\
+				   pad-to 512k | bl2 emmc-2ddr |\
+				   pad-to 2048k | bl31-uboot bananapi_bpi-r64-emmc |\
+				   pad-to 4096k | bl2 snand-2ddr |\
+				   pad-to 4608k | bl31-uboot bananapi_bpi-r64-snand |\
+				   pad-to 6144k | append-image-stage initramfs-recovery.itb |\
+				   pad-to 40960k | append-image squashfs-sysupgrade.itb | gzip
   KERNEL			:= kernel-bin | gzip
   KERNEL_INITRAMFS		:= kernel-bin | lzma | fit lzma $$(DTS_DIR)/$$(DEVICE_DTS).dtb with-initrd | pad-to 128k
   IMAGE/sysupgrade.itb		:= append-kernel | fit gzip $$(DTS_DIR)/$$(DEVICE_DTS).dtb external-static-with-rootfs | append-metadata
