@@ -4,7 +4,7 @@
 
 include $(TOPDIR)/rules.mk
 
-PKG_NAME:=firewall4
+PKG_NAME:=firewall
 PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
@@ -17,29 +17,29 @@ PKG_LICENSE:=ISC
 
 include $(INCLUDE_DIR)/package.mk
 
-define Package/firewall4
+define Package/firewall
   SECTION:=net
   CATEGORY:=Base system
   TITLE:=OpenWrt 4th gen firewall
   DEPENDS:=+ucode +ucode-mod-fs +ucode-mod-uci +ucode-mod-ubus +kmod-nft-core +kmod-nft-fib +kmod-nft-nat +kmod-nft-nat6 +nftables-json
-  CONFLICTS:=firewall kmod-ipt-nat
+  CONFLICTS:=firewall3 kmod-ipt-nat
 endef
 
-define Package/firewall4/description
+define Package/firewall/description
  This package provides an nftables-based implementation of the UCI firewall
  sharing the same configuration format.
 endef
 
-define Package/firewall4/conffiles
+define Package/firewall/conffiles
 /etc/config/firewall
 /etc/nftables.d/
 endef
 
-define Package/firewall4/install
+define Package/firewall/install
 	$(CP) -a $(PKG_BUILD_DIR)/root/* $(1)/
 endef
 
 define Build/Compile
 endef
 
-$(eval $(call BuildPackage,firewall4))
+$(eval $(call BuildPackage,firewall))
