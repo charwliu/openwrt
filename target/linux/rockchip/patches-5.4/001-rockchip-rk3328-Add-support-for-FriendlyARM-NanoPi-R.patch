@@ -47,7 +47,7 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
 +
 +/ {
 +	model = "FriendlyElec NanoPi R2S";
-+	compatible = "friendlyarm,nanopi-r2s", "rockchip,rk3328";
++	compatible = "friendlyelec,nanopi-r2s", "rockchip,rk3328";
 +
 +	chosen {
 +		stdout-path = "serial2:1500000n8";
