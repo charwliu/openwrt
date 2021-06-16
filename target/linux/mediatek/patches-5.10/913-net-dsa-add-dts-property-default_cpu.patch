@@ -1,0 +1,32 @@
+From fd06e600bec2cd6558c5611ab980d201c686e001 Mon Sep 17 00:00:00 2001
+From: LGA1150 <dqfext@gmail.com>
+Date: Mon, 17 May 2021 10:34:58 +0200
+Subject: [PATCH 1039/1041] net: dsa: add dts-property default_cpu
+
+use round-robin as fallback
+---
+ net/dsa/dsa2.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
+
+diff --git a/net/dsa/dsa2.c b/net/dsa/dsa2.c
+index f1b6e7ab3a7a..facb92e35918 100644
+--- a/net/dsa/dsa2.c
++++ b/net/dsa/dsa2.c
+@@ -234,6 +234,14 @@ static int dsa_tree_setup_default_cpus(struct dsa_switch_tree *dst)
+ 	/* Assign the CPU ports in round-robbin way to all ports of the fabric */
+ 	list_for_each_entry(dp, &dst->ports, list)
+ 		if (dsa_port_is_user(dp) || dsa_port_is_dsa(dp)) {
++			struct device_node *dn;
++
++			if (dn = of_parse_phandle(dp->dn, "default-cpu", 0)) {
++				dp->cpu_dp = dsa_tree_find_port_by_node(dst, dn);
++				if (dp->cpu_dp && dsa_port_is_cpu(dp->cpu_dp))
++					continue;
++			}
++
+ 			dp->cpu_dp = cpu_dp;
+ 
+ 			if (cpu_dp == last_cpu_dp)
+-- 
+2.31.1
+
