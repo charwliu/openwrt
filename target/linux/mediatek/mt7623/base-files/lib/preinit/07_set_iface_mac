@@ -30,10 +30,10 @@ set_recovery_mac_address() {
 
 			mac=$(macaddr_add $mac 1)
 
-			ip link set dev lan0 address $mac 2>/dev/null
 			ip link set dev lan1 address $mac 2>/dev/null
 			ip link set dev lan2 address $mac 2>/dev/null
 			ip link set dev lan3 address $mac 2>/dev/null
+			ip link set dev lan4 address $mac 2>/dev/null
 		fi
 	fi
 }

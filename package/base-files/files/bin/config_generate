@@ -153,7 +153,7 @@ generate_network() {
 		static)
 			local ipad
 			case "$1" in
-				lan) ipad=${ipaddr:-"192.168.4.1"} ;;
+				lan) ipad=${ipaddr:-"192.168.8.1"} ;;
 				*) ipad=${ipaddr:-"192.168.$((addr_offset++)).1"} ;;
 			esac
 
@@ -293,7 +293,7 @@ generate_static_system() {
 	uci -q batch <<-EOF
 		delete system.@system[0]
 		add system system
-		set system.@system[-1].hostname='npi-r4s'
+		set system.@system[-1].hostname='bpi-r2'
 		set system.@system[-1].zonename='Asia/Shanghai'
 		set system.@system[-1].timezone='CST-8'
 		set system.@system[-1].ttylogin='0'

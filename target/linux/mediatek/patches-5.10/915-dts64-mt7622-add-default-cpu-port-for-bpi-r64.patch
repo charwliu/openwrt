@@ -11,7 +11,7 @@ diff --git a/arch/arm64/boot/dts/mediatek/mt7622-bananapi-bpi-r64.dts b/arch/arm
 index d9d11d8c95af..78aab86124d0 100644
 --- a/arch/arm64/boot/dts/mediatek/mt7622-bananapi-bpi-r64.dts
 +++ b/arch/arm64/boot/dts/mediatek/mt7622-bananapi-bpi-r64.dts
-@@ -160,29 +160,34 @@ ports {
+@@ -217,29 +217,34 @@
  				port@0 {
  					reg = <0>;
  					label = "wan";
@@ -20,25 +20,25 @@ index d9d11d8c95af..78aab86124d0 100644
  
  				port@1 {
  					reg = <1>;
- 					label = "lan1";
+					label = "lan1";
 +					default-cpu = <&dsa_cpu0>;
  				};
  
  				port@2 {
  					reg = <2>;
- 					label = "lan2";
+					label = "lan2";
 +					default-cpu = <&dsa_cpu0>;
  				};
  
  				port@3 {
  					reg = <3>;
- 					label = "lan3";
+					label = "lan3";
 +					default-cpu = <&dsa_cpu0>;
  				};
  
  				port@4 {
  					reg = <4>;
- 					label = "lan4";
+					label = "lan4";
 +					default-cpu = <&dsa_cpu0>;
  				};
  
@@ -47,7 +47,7 @@ index d9d11d8c95af..78aab86124d0 100644
  					reg = <5>;
  					label = "cpu2";
  					ethernet = <&gmac1>;
-@@ -195,7 +200,7 @@ fixed-link {
+@@ -252,7 +257,7 @@
  					};
  				};
  
