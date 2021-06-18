@@ -1,0 +1,36 @@
+From 945c1dba6e747cc7b535fb5b97b24dd24e09b081 Mon Sep 17 00:00:00 2001
+From: Frank Wunderlich <frank-w@public-files.de>
+Date: Mon, 17 May 2021 10:06:55 +0200
+Subject: [PATCH 39/42] dts64: mt7622: add second gmac
+
+---
+ .../boot/dts/mediatek/mt7622-bananapi-bpi-r64.dts   | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/mediatek/mt7622-bananapi-bpi-r64.dts b/arch/arm64/boot/dts/mediatek/mt7622-bananapi-bpi-r64.dts
+index 2630810ec711..d9d11d8c95af 100644
+--- a/arch/arm64/boot/dts/mediatek/mt7622-bananapi-bpi-r64.dts
++++ b/arch/arm64/boot/dts/mediatek/mt7622-bananapi-bpi-r64.dts
+@@ -182,6 +182,19 @@ port@4 {
+ 					label = "lan3";
+ 				};
+ 
++				port@5 {
++					reg = <5>;
++					label = "cpu2";
++					ethernet = <&gmac1>;
++					phy-mode = "rgmii";
++
++					fixed-link {
++						speed = <1000>;
++						full-duplex;
++						pause;
++					};
++				};
++
+ 				port@6 {
+ 					reg = <6>;
+ 					label = "cpu";
+-- 
+2.31.1
+
