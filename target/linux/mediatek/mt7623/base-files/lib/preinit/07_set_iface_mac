@@ -8,10 +8,6 @@ set_recovery_mac_address() {
 	local mac
 
 	if [ -b $RECOVERY_PART ]; then
-		insmod nls_cp437
-		insmod nls_iso8859-1
-		insmod fat
-		insmod vfat
 		mkdir -p /tmp/recovery
 		if mount -o rw,noatime $RECOVERY_PART -t vfat /tmp/recovery; then
 			if [ -f "/tmp/recovery/mac_addr" ];
