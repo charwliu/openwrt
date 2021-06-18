@@ -45,16 +45,15 @@ CONFIG_TARGET_rockchip=y
 # CONFIG_TARGET_x86 is not set
 CONFIG_TARGET_rockchip_armv8=y
 # CONFIG_TARGET_MULTI_PROFILE is not set
-# CONFIG_TARGET_rockchip_armv8_DEVICE_friendlyelec_nanopi-r2s is not set
-CONFIG_TARGET_rockchip_armv8_DEVICE_friendlyelec_nanopi-r4s=y
-# CONFIG_TARGET_rockchip_armv8_DEVICE_friendlyarm_nanopi-r4s is not set
+# CONFIG_TARGET_rockchip_armv8_DEVICE_friendlyarm_nanopi-r2s is not set
+CONFIG_TARGET_rockchip_armv8_DEVICE_friendlyarm_nanopi-r4s=y
 # CONFIG_TARGET_rockchip_armv8_DEVICE_pine64_rockpro64 is not set
 # CONFIG_TARGET_rockchip_armv8_DEVICE_radxa_rock-pi-4 is not set
 CONFIG_HAS_SUBTARGETS=y
 CONFIG_HAS_DEVICES=y
 CONFIG_TARGET_BOARD="rockchip"
 CONFIG_TARGET_SUBTARGET="armv8"
-CONFIG_TARGET_PROFILE="DEVICE_friendlyelec_nanopi-r4s"
+CONFIG_TARGET_PROFILE="DEVICE_friendlyarm_nanopi-r4s"
 CONFIG_TARGET_ARCH_PACKAGES="aarch64_generic"
 CONFIG_DEFAULT_TARGET_OPTIMIZATION="-Os -pipe -mcpu=generic"
 CONFIG_CPU_TYPE="generic"
@@ -1684,6 +1683,7 @@ CONFIG_ZABBIX_POSTGRESQL=y
 # Boot Loaders
 #
 CONFIG_PACKAGE_arm-trusted-firmware-rockchip=y
+CONFIG_PACKAGE_u-boot-nanopi-r4s-rk3399=y
 # end of Boot Loaders
 
 #
